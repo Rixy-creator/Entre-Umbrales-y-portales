@@ -6,17 +6,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // VALIDACIÓN EN TIEMPO REAL
     requiredFields.forEach(field => {
-        const input = field.querySelector("input");
+        // Soporta tanto <input> como <textarea> en campos requeridos.
+        const input = field.querySelector("input, textarea");
 
-        input.addEventListener("input", () => {
+        const validateField = () => {
             if (input.value.trim() === "") {
-                field.classList.add("error");
-                field.classList.remove("success");
+                // Si el campo está vacío, quitamos cualquier estilo (ni éxito ni error)
+                field.classList.remove("success", "error");
             } else {
                 field.classList.add("success");
                 field.classList.remove("error");
             }
-        });
+        };
+
+        input.addEventListener("input", validateField);
+        input.addEventListener("blur", validateField);
+        input.addEventListener("change", validateField);
     });
 
     // VALIDACIÓN AL ENVIAR
@@ -26,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let formIsValid = true;
 
         requiredFields.forEach(field => {
-            const input = field.querySelector("input");
+            const input = field.querySelector("input, textarea");
 
             if (input.value.trim() === "") {
                 field.classList.add("error");
