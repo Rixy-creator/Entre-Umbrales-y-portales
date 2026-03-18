@@ -176,7 +176,9 @@
 body {
     background-color: #0b0506;
     background-image: url("../images/Fondo-web.png");
-    background-repeat: repeat;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
     color: #333333;
     border: 4px solid #000000;
     line-height: 1.6;
