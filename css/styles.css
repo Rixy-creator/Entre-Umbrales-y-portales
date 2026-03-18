@@ -966,6 +966,30 @@ section {
     transform: translateY(-1px);
 }
 
+/* SPINER DE CARGA */
+.contact-btn .spinner-border {
+    width: 1.2rem;
+    height: 1.2rem;
+    vertical-align: middle;
+    /* Usamos tu rojo de acento */
+    color: #ff2a2a !important; 
+    /* Un pequeño resplandor para que destaque sobre el botón oscuro */
+    filter: drop-shadow(0 0 5px #b11226);
+    border-width: 0.15em;
+    margin-right: 8px;
+}
+
+/* Estado del botón mientras envía */
+.contact-btn:disabled {
+    background-color: #200000 !important; /* Rojo muy oscuro */
+    border-color: #000000;
+    color: #888 !important;
+    cursor: not-allowed;
+    box-shadow: inset 0 0 10px #000;
+    opacity: 0.9;
+}
+
+
 /* Responsive */
 @media (max-width: 576px) {
     .contact-form {
