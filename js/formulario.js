@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("contactForm");
     const btn = document.getElementById("submitBtn");
-    const status = document.getElementById("form-status"); // Asegúrate de tener este ID en el HTML
+    const btnText = document.getElementById("btnText");
+    const spinner = document.getElementById("spinner");
     const requiredFields = form.querySelectorAll(".required-field");
 
-    // 1. VALIDACIÓN EN TIEMPO REAL (Mantiene tus estilos success/error)
+    // 1. TU VALIDACIÓN EN TIEMPO REAL (Mantiene tus estilos success/error)
     requiredFields.forEach(field => {
         const input = field.querySelector("input, textarea");
         const validateField = () => {
@@ -16,15 +17,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         };
         input.addEventListener("input", validateField);
+        input.addEventListener("blur", validateField);
     });
 
-    // 2. PROCESO DE ENVÍO
+    // 2. LÓGICA DE ENVÍO
     form.addEventListener("submit", function(e) {
-        e.preventDefault(); // Detenemos el envío automático de HTML
+        e.preventDefault(); // Evitamos que la página se recargue
         
         let formIsValid = true;
 
-        // Comprobamos si falta algún campo obligatorio
+        // Comprobamos campos obligatorios antes de enviar
         requiredFields.forEach(field => {
             const input = field.querySelector("input, textarea");
             if (input.value.trim() === "") {
@@ -36,32 +38,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!formIsValid) {
             alert("⚠️ Debes rellenar todas las casillas obligatorias.");
-            return; // Si hay errores, no se ejecuta el envío a Formspree
+            return;
         }
 
-        // 3. SI TODO ESTÁ OK -> ENVÍO POR AJAX (Formspree)
+        // --- 3. INICIO DEL ENVÍO (Efecto Visual) ---
         btn.disabled = true;
-        btn.innerText = "Enviando...";
+        spinner.classList.remove("d-none"); // Mostramos el spinner rojo
+        btnText.innerText = "Abriendo portal..."; // Mensaje temático
 
+        // --- 4. PETICIÓN AJAX A FORMSPREE ---
         $.ajax({
-            url: form.action, // Usa el https://formspree.io que ya tienes en el HTML
+            url: form.action, // Usa el ID de Formspree de tu HTML
             method: 'POST',
-            data: $(form).serialize(), // Empaqueta los datos para enviarlos
+            data: $(form).serialize(),
             dataType: 'json',
             success: function() {
-                // Éxito total
-                alert("✅ ¡Mensaje enviado con éxito!");
+                alert("✅ El mensaje ha cruzado el portal con éxito.");
                 form.reset(); // Limpia los campos
-                requiredFields.forEach(f => f.classList.remove("success", "error"));
-                btn.disabled = false;
-                btn.innerText = "Enviar mensaje";
+                restaurarBoton();
             },
             error: function() {
-                // Error de red o configuración
-                alert("❌ Hubo un problema al enviar el formulario. Inténtalo de nuevo.");
-                btn.disabled = false;
-                btn.innerText = "Enviar mensaje";
+                alert("❌ El portal se ha cerrado. Reintenta el envío.");
+                restaurarBoton();
             }
         });
+
+        // Función para devolver el botón a su estado normal
+        function restaurarBoton() {
+            btn.disabled = false;
+            spinner.classList.add("d-none");
+            btnText.innerText = "Enviar mensaje";
+            // Quitamos los bordes de éxito/error de los campos
+            requiredFields.forEach(f => f.classList.remove("success", "error"));
+        }
     });
 });
