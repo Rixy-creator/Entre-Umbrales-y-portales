@@ -1191,3 +1191,25 @@ section {
         padding-top: 1rem;
     }
 }
+
+/* Alineación para escritorio: alinear .read-box y .reveal con las tablas */
+@media (min-width: 992px) {
+    /* Mantener cajas alineadas con las tablas */
+    .read-box,
+    .reveal {
+        max-width: 1100px; /* coincide con .umbral-table y .commander-table */
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* H2: reducir al ancho del texto y alinear su borde izquierdo con las tablas centradas */
+    h2.section-title {
+        display: table; /* shrink-to-fit para que el subrayado coincida con el texto */
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        /* colocar la caja h2 de forma que su borde izquierdo coincida con la tabla centrada */
+        margin-left: calc((100% - 1100px) / 2);
+    }
+}
