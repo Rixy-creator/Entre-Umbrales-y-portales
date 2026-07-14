@@ -881,121 +881,290 @@ section {
 
 /* Fin de los estilos de la tabla de umbral */
 /* =========================================================
-    FORMULARIO DE CONTACTO
+    FORMULARIO DE CONTACTO  (diseño premium)
    ========================================================= */
 
 .contact-section {
-    max-width: 720px;
+    max-width: 680px;
 }
 
-/* Contenedor del formulario */
+/* ── Contenedor principal ── */
 .contact-form {
-    background: rgba(0, 0, 0, 0.55);
-    padding: 2.5rem 2rem;
-    border: 3px solid var(--umbral-border-color);
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(177, 18, 38, 0.25);
+    position: relative;
+    /* Fondo semitransparente: deja ver el fondo de la web */
+    background: rgba(12, 4, 6, 0.52);
+    padding: 3rem 2.5rem 2.5rem;
+    /* Borde uniforme con brillo parejo en los cuatro lados */
+    border: 1px solid rgba(255, 42, 42, 0.45);
+    border-radius: 16px;
+    box-shadow:
+        /* Halo exterior — igual en todos los lados */
+        0 0 18px rgba(177, 18, 38, 0.35),
+        0 0 50px rgba(177, 18, 38, 0.18),
+        /* Ligera profundidad interior */
+        inset 0 0 40px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
 }
 
-/* Grupo de campos */
-.form-group {
-    margin-bottom: 1.6rem;
+/* Eliminamos la línea superior exclusiva;  
+   el brillo uniforme del border + box-shadow ya cubre todos los lados */
+.contact-form::before { content: none; }
+
+/* ── Cabecera decorativa ── */
+.form-header {
+    text-align: center;
+    margin-bottom: 2.8rem;
 }
 
-/* Etiquetas */
-.contact-form label {
+.form-header__ornament {
     display: block;
-    margin-bottom: 0.4rem;
-    font-family: 'Cinzel', serif;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-    color: #f0f0f0;
+    font-size: 1.9rem;
+    color: #ff2a2a;
+    margin-bottom: 0.55rem;
+    animation: ornamentPulse 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(255, 42, 42, 0.65));
 }
 
-/* Inputs y textarea */
+@keyframes ornamentPulse {
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 42, 42, 0.55)); }
+    50%       { filter: drop-shadow(0 0 16px rgba(255, 42, 42, 0.95)); }
+}
+
+.form-header__subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: rgba(255, 42, 42, 0.9);
+    text-shadow: 0 0 10px rgba(255, 42, 42, 0.4);
+    text-indent: 0;
+    margin: 0;
+}
+
+/* ── Grupo de campo ── */
+.form-group {
+    margin-bottom: 2.2rem;
+}
+
+/* ── Envoltorio del input (necesario para el label flotante) ── */
+.input-wrapper {
+    position: relative;
+}
+
+/* ── Inputs y textarea ── */
 .contact-form input,
 .contact-form textarea {
     width: 100%;
-    padding: 0.75rem 0.9rem;
-    background: rgba(0, 0, 0, 0.6);
-    border: 2px solid rgba(255, 42, 42, 0.4);
-    border-radius: 6px;
+    padding: 1.15rem 0.2rem 0.45rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0;
     color: #f5f5f5;
     font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    font-size: 0.97rem;
+    outline: none;
+    transition: border-color 0.25s ease, background 0.25s ease;
+    /* Necesario para :not(:placeholder-shown) en labels flotantes */
 }
 
-/* Quitar resize exagerado */
+/* ── Anular el fondo blanco del autocompletado del navegador ──
+    El truco consiste en cubrir el color del agente de usuario
+    con un inset box-shadow del mismo tono que nuestro fondo.
+─────────────────────────────────────────────────────────────── */
+.contact-form input:-webkit-autofill,
+.contact-form input:-webkit-autofill:hover,
+.contact-form input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px rgba(25, 8, 12, 0.80) inset !important;
+    -webkit-text-fill-color: #f5f5f5 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    /* Retrasa la transición de color del agente para que no parpadee */
+    transition: background-color 9999s ease-in-out 0s;
+    caret-color: #f5f5f5;
+}
+
 .contact-form textarea {
     resize: vertical;
+    min-height: 130px;
+    padding-top: 1.5rem;
 }
 
-/* Focus */
+/* ── Labels flotantes ── */
+.contact-form label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-family: 'Cinzel', serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.8px;
+    color: rgba(200, 200, 200, 0.55);
+    pointer-events: none;
+    transition: top 0.22s ease, font-size 0.22s ease,
+                color 0.22s ease, letter-spacing 0.22s ease,
+                transform 0.22s ease;
+}
+
+/* Label flotante para textarea: posición inicial */
+.input-wrapper--textarea label {
+    top: 1.5rem;
+    transform: none;
+}
+
+/* Input con foco O con contenido → label sube */
+.contact-form input:focus ~ label,
+.contact-form input:not(:placeholder-shown) ~ label {
+    top: 0;
+    transform: none;
+    font-size: 0.66rem;
+    letter-spacing: 1.8px;
+    color: rgba(255, 42, 42, 0.9);
+}
+
+/* Textarea con foco O con contenido → label sube */
+.contact-form textarea:focus ~ label,
+.contact-form textarea:not(:placeholder-shown) ~ label {
+    top: 0.2rem;
+    font-size: 0.66rem;
+    letter-spacing: 1.8px;
+    color: rgba(255, 42, 42, 0.9);
+}
+
+/* ── Línea inferior animada ── */
+.input-line {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #7a0018, #ff2a2a, #7a0018);
+    box-shadow: 0 0 8px rgba(255, 42, 42, 0.55);
+    transform: translateX(-50%);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.contact-form input:focus ~ .input-line,
+.contact-form textarea:focus ~ .input-line {
+    width: 100%;
+}
+
+/* Focus: sutil fondo cálido bajo el campo */
 .contact-form input:focus,
 .contact-form textarea:focus {
-    outline: none;
-    border-color: var(--umbral-border-color);
-    box-shadow: 0 0 12px rgba(255, 42, 42, 0.45);
+    background: rgba(177, 18, 38, 0.04);
+    border-color: transparent;
 }
 
-/* Botón */
+/* ── Estrella de campo requerido ── */
+.required-star {
+    color: #ff2a2a;
+    font-size: 0.75em;
+    filter: drop-shadow(0 0 3px rgba(255, 42, 42, 0.55));
+}
+
+/* ── Contador de caracteres ── */
+.char-counter {
+    display: block;
+    text-align: right;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.4px;
+    color: rgba(200, 200, 200, 0.3);
+    margin-top: 0.4rem;
+    transition: color 0.25s ease;
+}
+
+.char-counter.warn   { color: rgba(255, 170, 0, 0.75); }
+.char-counter.danger { color: rgba(255, 42, 42, 0.85); }
+
+/* ── Botón de envío ── */
 .contact-btn {
-    margin-top: 1rem;
-    padding: 0.9em 2.6em;
+    position: relative;
+    margin-top: 1.6rem;
+    padding: 1em 3.2em;
     font-family: 'Cinzel', serif;
-    font-size: 0.85rem;
-    letter-spacing: 2px;
+    font-size: 0.8rem;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
     color: #ffffff;
-    background: linear-gradient(90deg, #b11226 0%, #ff2a2a 100%);
-    border: 2px solid #2e0000;
-    border-radius: 8px;
+    background: linear-gradient(90deg, #7a0018 0%, #b11226 45%, #ff2a2a 100%);
+    border: 1px solid rgba(255, 42, 42, 0.35);
+    border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 8px 18px rgba(177, 18, 38, 0.35);
-    transition: all 0.3s ease;
+    overflow: hidden;
+    box-shadow:
+        0 6px 22px rgba(177, 18, 38, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    transition: all 0.32s ease;
 }
 
-/* Hover */
+/* Brillo deslizante al hacer hover */
+.contact-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.18) 50%,
+        transparent 100%
+    );
+    transition: left 0.55s ease;
+    pointer-events: none;
+}
+
+.contact-btn:hover::before { left: 170%; }
+
 .contact-btn:hover {
-    background: linear-gradient(90deg, #ff2a2a 0%, #b11226 100%);
-    box-shadow: 0 14px 26px rgba(255, 42, 42, 0.5);
-    transform: translateY(-4px);
+    background: linear-gradient(90deg, #b11226 0%, #ff2a2a 55%, #ff5555 100%);
+    box-shadow:
+        0 10px 30px rgba(255, 42, 42, 0.5),
+        0 0 0 1px rgba(255, 42, 42, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    transform: translateY(-3px);
+    letter-spacing: 3px;
 }
 
-/* Active */
-.contact-btn:active {
-    transform: translateY(-1px);
+.contact-btn:active { transform: translateY(-1px); }
+
+/* Estado cargando */
+.contact-btn:disabled {
+    background: rgba(40, 0, 10, 0.65) !important;
+    border-color: rgba(80, 0, 15, 0.3);
+    color: rgba(255, 255, 255, 0.3) !important;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none !important;
+    letter-spacing: 2.5px;
 }
 
-/* SPINER DE CARGA */
+/* Spinner */
 .contact-btn .spinner-border {
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1.1rem;
+    height: 1.1rem;
     vertical-align: middle;
-    /* Usamos tu rojo de acento */
-    color: #ff2a2a !important; 
-    /* Un pequeño resplandor para que destaque sobre el botón oscuro */
-    filter: drop-shadow(0 0 5px #b11226);
+    color: #ff2a2a !important;
+    filter: drop-shadow(0 0 4px #b11226);
     border-width: 0.15em;
     margin-right: 8px;
 }
 
-/* Estado del botón mientras envía */
-.contact-btn:disabled {
-    background-color: #200000 !important; /* Rojo muy oscuro */
-    border-color: #000000;
-    color: #888 !important;
-    cursor: not-allowed;
-    box-shadow: inset 0 0 10px #000;
-    opacity: 0.9;
-}
-
-
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 576px) {
     .contact-form {
-        padding: 2rem 1.4rem;
+        padding: 2.4rem 1.4rem 2rem;
+    }
+
+    .contact-btn {
+        width: 100%;
+        padding: 1em 2em;
     }
 }
 
@@ -1003,25 +1172,32 @@ section {
     ESTADOS DE VALIDACIÓN DEL FORMULARIO
    ========================================================= */
 
-.form-group input,
-.form-group textarea {
-    border: 2px solid #555;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+/* Error: línea roja permanente + sutil resplandor en el campo */
+.form-group.error .input-line {
+    width: 100%;
+    background: #ff2a2a;
+    box-shadow: 0 0 10px rgba(255, 42, 42, 0.6);
+    transition: none;
 }
 
-/* Vacío / error */
 .form-group.error input,
 .form-group.error textarea {
-    border-color: #ff2a2a;
-    box-shadow: 0 0 10px rgba(255, 42, 42, 0.6);
+    border-color: rgba(255, 42, 42, 0.3);
 }
 
-/* Correcto */
+/* Correcto: línea verde permanente */
+.form-group.success .input-line {
+    width: 100%;
+    background: #2aff7a;
+    box-shadow: 0 0 10px rgba(42, 255, 122, 0.45);
+    transition: none;
+}
+
 .form-group.success input,
 .form-group.success textarea {
-    border-color: #2aff7a;
-    box-shadow: 0 0 10px rgba(42, 255, 122, 0.6);
+    border-color: rgba(42, 255, 122, 0.2);
 }
+
 
 /* =========================================================
     TABLAS DE COMANDANTES
@@ -1211,5 +1387,197 @@ section {
         margin-bottom: 2rem;
         /* colocar la caja h2 de forma que su borde izquierdo coincida con la tabla centrada */
         margin-left: calc((100% - 1100px) / 2);
+    }
+}
+
+/* =========================================================
+    MODAL DE RESPUESTA DEL FORMULARIO
+   ========================================================= */
+
+/* Capa de fondo completo (overlay) */
+.form-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Oculto por defecto vía atributo hidden y opacidad */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+
+/* Cuando el modal está activo */
+.form-modal.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Fondo semitransparente con desenfoque */
+.form-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    cursor: pointer; /* clic en el fondo también cierra */
+}
+
+/* Caja central del modal */
+.form-modal__box {
+    position: relative;
+    z-index: 1;
+    width: min(90vw, 480px);
+    padding: 3rem 2.5rem 2.5rem;
+    background: rgba(11, 5, 6, 0.92);
+    border: 2px solid rgba(255, 42, 42, 0.55);
+    border-radius: 14px;
+    box-shadow:
+        0 0 40px rgba(177, 18, 38, 0.4),
+        0 0 80px rgba(177, 18, 38, 0.15),
+        inset 0 0 20px rgba(0, 0, 0, 0.6);
+    text-align: center;
+
+    /* Animación de entrada */
+    transform: translateY(28px) scale(0.96);
+    transition: transform 0.4s cubic-bezier(0.22, 0.9, 0.28, 1),
+                opacity 0.35s ease;
+    opacity: 0;
+}
+
+.form-modal.is-visible .form-modal__box {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* Línea decorativa superior (acento de color) */
+.form-modal__box::before {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 0 auto 2rem;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #ff2a2a, #b11226, #ff2a2a);
+    box-shadow: 0 0 12px rgba(177, 18, 38, 0.55);
+}
+
+/* ── ICONO ── */
+.form-modal__icon {
+    font-size: 3.2rem;
+    line-height: 1;
+    margin-bottom: 1.2rem;
+    /* Halo suave */
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* Estados del icono */
+.form-modal__icon.icon--success {
+    color: #2aff7a;
+}
+.form-modal__icon.icon--success::before {
+    content: "✦";
+}
+
+.form-modal__icon.icon--error {
+    color: #ff2a2a;
+}
+.form-modal__icon.icon--error::before {
+    content: "✕";
+    font-size: 2.6rem;
+}
+
+/* ── TÍTULO ── */
+.form-modal__title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.25rem, 4vw, 1.7rem);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #f0f0f0;
+    margin-bottom: 0.9rem;
+    /* Sobreescribir estilos globales de h2 */
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    -webkit-text-fill-color: unset;
+    text-shadow: none;
+    animation: none;
+}
+
+/* Estado éxito: título en degradado verde */
+.form-modal.is-success .form-modal__title {
+    background: linear-gradient(90deg, #1aff7a, #00cc55, #1aff7a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Estado error: título en rojo */
+.form-modal.is-error .form-modal__title {
+    background: linear-gradient(90deg, #ff9a9a, #ff2a2a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* ── MENSAJE ── */
+.form-modal__message {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #d0d0d0;
+    text-indent: 0;
+    margin-bottom: 2rem;
+}
+
+/* ── BOTÓN DE CIERRE ── */
+.form-modal__btn {
+    display: inline-block;
+    padding: 0.85em 2.2em;
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: linear-gradient(90deg, #b11226 0%, #ff2a2a 100%);
+    border: 2px solid #2e0000;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(177, 18, 38, 0.35);
+    transition: all 0.3s ease;
+}
+
+.form-modal__btn:hover {
+    background: linear-gradient(90deg, #ff2a2a 0%, #b11226 100%);
+    box-shadow: 0 14px 26px rgba(255, 42, 42, 0.5);
+    transform: translateY(-3px);
+}
+
+.form-modal__btn:active {
+    transform: translateY(-1px);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+    .form-modal__box {
+        padding: 2.2rem 1.5rem 2rem;
+    }
+
+    .form-modal__icon {
+        font-size: 2.6rem;
+    }
+
+    .form-modal__btn {
+        width: 100%;
+        padding: 0.9em 1rem;
+    }
+}
+
+/* Accesibilidad: sin animación si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+    .form-modal,
+    .form-modal__box {
+        transition: none;
     }
 }
