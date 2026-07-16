@@ -78,12 +78,39 @@ document.addEventListener("DOMContentLoaded", () => {
         return div.innerHTML;
     }
 
-    // ── UTILIDAD: Validación de formato de email ──────────────────────────────
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // ── UTILIDAD: Regex de emojis ────────────────────────────────────────────
+    // Cubre la mayoría de rangos Unicode de emojis / símbolos pictográficos
+    const emojiRegex = /[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2702}-\u{27B0}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA9F}\u{200D}\u{20D0}-\u{20FF}]/u;
 
-    // ── 1. VALIDACIÓN EN TIEMPO REAL ──────────────────────────────────────────
+    // ── UTILIDAD: Validación de formato de email (solo Gmail) ─────────────────
+    const emailRegex = /^[^\s@]+@gmail\.com$/i;
+
+    // ── UTILIDAD: Eliminar emojis de un string ────────────────────────────────
+    function stripEmojis(str) {
+        return str.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2702}-\u{27B0}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA9F}\u{200D}\u{20D0}-\u{20FF}]/gu, "");
+    }
+
+    // ── 1. VALIDACIÓN EN TIEMPO REAL + BLOQUEO DE EMOJIS ─────────────────────
     requiredFields.forEach(field => {
         const input = field.querySelector("input, textarea");
+
+        // Bloquear emojis en nombre, apellidos y email (NO en textarea)
+        const isTextOrEmail = input.type === "text" || input.type === "email";
+        if (isTextOrEmail) {
+            input.addEventListener("input", () => {
+                const cursor = input.selectionStart;
+                const cleaned = stripEmojis(input.value);
+                if (cleaned !== input.value) {
+                    const removed = input.value.length - cleaned.length;
+                    input.value = cleaned;
+                    // Restaurar posición del cursor tras la limpieza
+                    input.setSelectionRange(
+                        Math.max(0, cursor - removed),
+                        Math.max(0, cursor - removed)
+                    );
+                }
+            });
+        }
 
         const validateField = () => {
             const value = input.value.trim();
@@ -93,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Validación extra para el campo email
+            // Validación extra para el campo email (solo Gmail)
             if (input.type === "email") {
                 if (emailRegex.test(value)) {
                     field.classList.add("success");
@@ -156,13 +183,13 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Validación de formato de email
+        // Validación de formato de email (solo se acepta Gmail)
         const emailInput = form.querySelector('input[type="email"]');
         if (!emailRegex.test(emailInput.value.trim())) {
             openModal(
                 "error",
                 "Coordenadas incorrectas",
-                "El formato del correo electrónico no es válido. Revisa la dirección e inténtalo de nuevo."
+                "Solo se aceptan direcciones de Gmail (ejemplo@gmail.com). Revisa tu correo e inténtalo de nuevo."
             );
             return;
         }
